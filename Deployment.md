@@ -175,4 +175,33 @@ sudo systemctl start apache2.service
 sudo systemctl reload apache2.service
 ```
 
-## Docker Deployment
+## Backup
+
+* Local scheduled backup
+* Remote mirror backup
+
+Local server:
+
+```sh
+# backup.shell
+cp /path/to/sqlite3 /path/to/target/backup/$(date +%m%d%H%M)_db.sqlite3
+find /path/to/packup/dir -mtime +3 -name "sqlite3" -exec rm {} \;
+# terminal
+crontab -e
+# crontab
+0 */4 0 0 0 sh /path/to/backup.shell
+```
+
+Remote mirror:
+
+```sh
+# mirror.shell
+# -e execute the command just after selecting
+# mirror -e delete local if remote file does not exists
+# mirror -n mirror newer file only
+lftp username:passwd@hostname:port -e "mirror -e -n /remote/ /local/"
+# terminal
+crontab -e
+# crontab
+0 0 * * * sh /path/to/mirror.shell
+```
